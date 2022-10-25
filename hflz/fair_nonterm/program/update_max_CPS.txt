@@ -1,0 +1,104 @@
+/* valid */
+%PROGRAM
+let ev_a k = event called; event a; k
+
+let ev_b k = event called; event b; k
+
+let cont x =
+  event called;
+  let y = <_exists> * in
+  if x < y then
+    update_max_CPS ev_b y
+  else
+    update_max_CPS ev_a x
+
+let update_max_CPS ev x =
+  event called;
+  ev (cont x)
+
+let () =
+  let x = <_exists> * in
+  update_max_CPS ev_a x
+
+
+%TRANSITION
+q_0 called -> (1, q_0).
+q_a called -> (1, q_0).
+q_b called -> (1, q_0).
+
+q_0 d -> (1, q_0) \/ (2, q_0).
+q_a d -> (1, q_0) \/ (2, q_0).
+q_b d -> (1, q_0) \/ (2, q_0).
+
+q_0 a -> (1, q_a).
+q_a a -> (1, q_a).
+q_b a -> (1, q_a).
+
+q_0 b -> (1, q_b).
+q_a b -> (1, q_b).
+q_b b -> (1, q_b).
+
+q_0 nullary -> false.
+q_a nullary -> false.
+q_b nullary -> false.
+
+%PRIORITY
+/* {(a, b)} */
+q_0 -> 0.
+q_a -> 1.
+q_b -> 2.
+
+/*
+/* disprover-1を以下のように変えると解ける */
+%HES
+Sentry =v ∀x. x < 1 \/ Exists x.
+Exists x =v
+  ((∀recCont__q_a. 
+     recCont__q_a < 1 + 1 * x \/ recCont__q_a < 1 + (-1) * x
+     \/ recCont__q_a < 1
+     \/ Update_max_CPS__q recCont__q_a Ev_a__q x)
+   \/ (∀recCont__q_a. 
+        recCont__q_a < 1 + 1 * -x \/ recCont__q_a < 1 + (-1) * -x
+        \/ recCont__q_a < 1
+        \/ Update_max_CPS__q recCont__q_a Ev_a__q (-x))
+   \/ Exists (x - 1))
+  /\ x >= 0.
+Cont__q_b x =v
+  ∀x2. x2 < 1 + 1 * x \/ x2 < 1 + (-1) * x \/ x2 < 1 \/ Cont__q_b__2_e x x2.
+Cont__q_b__2_e x x2 =v
+  ((∀recCont__q_a. 
+     recCont__q_a < 1 + 1 * x2 \/ recCont__q_a < 1 + (-1) * x2
+     \/ recCont__q_a < 1 + 1 * x
+     \/ recCont__q_a < 1 + (-1) * x
+     \/ recCont__q_a < 1
+     \/ Cont28__q recCont__q_a x x2)
+   \/ (∀recCont__q_a. 
+        recCont__q_a < 1 + 1 * -x2 \/ recCont__q_a < 1 + (-1) * -x2
+        \/ recCont__q_a < 1 + 1 * x
+        \/ recCont__q_a < 1 + (-1) * x
+        \/ recCont__q_a < 1
+        \/ Cont28__q recCont__q_a x (-x2))
+   \/ Cont__q_b__2_e x (x2 - 1))
+  /\ x2 >= 0.
+Cont__q_a recCont__q_a x =v
+  recCont__q_a > 0
+  /\ (∀x2. 
+       x2 < 1 + 1 * x \/ x2 < 1 + (-1) * x \/ x2 < 1
+       \/ Cont__q_a__1_e recCont__q_a x x2).
+Cont__q_a__1_e recCont__q_a x x2 =v
+  (Cont28__q recCont__q_a x x2 \/ Cont28__q recCont__q_a x (-x2)
+   \/ Cont__q_a__1_e recCont__q_a x (x2 - 1))
+  /\ x2 >= 0.
+Ev_a__q k__q_a k__q_b =v k__q_a.
+Ev_b__q k__q_a k__q_b =v k__q_b.
+
+Cont28__q recCont__q_a x y =v
+  (x >= y \/ Update_max_CPS__q_b recCont__q_a Ev_b__q y)
+  /\ (x < y \/ Update_max_CPS__q recCont__q_a Ev_a__q x).
+
+Update_max_CPS__q recCont__q_a ev__q x =v
+  ev__q (Cont__q_a (recCont__q_a - 1) x) (Cont__q_b x).
+
+Update_max_CPS__q_b recCont__q_a ev__q x =v
+  ev__q (Cont__q_a (recCont__q_a - 1) x) (Cont__q_b x).
+*/

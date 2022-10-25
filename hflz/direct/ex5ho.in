@@ -1,0 +1,31 @@
+%HES
+Sentry =u X0 (K 0).
+K x k =v k x.
+Pred x k =v x (\y. k (y-1)).
+X0 x =v Y0 x.
+X1 x =v Y1 x.
+X2 x =v Y2 x.
+Y0 x =u Y10 x \/ Y20 x.
+Y1 x =u Y11 x \/ Y21 x.
+Y2 x =u Y12 x \/ Y22 x.
+Y10 x =u ∀y. Y1 (K y).
+Y11 x =u (x (\y. 0 >= y) /\ Y0 x) \/ (x (\y. y >= 1) /\ Y2 x).
+Y12 x =u Y1 (Pred x).
+Y20 x =u Y210 x \/ Z0 x.
+Y21 x =u Y211 x \/ Z1 x.
+Y22 x =u Y212 x \/ Z2 x.
+Y210 x =u x (\y. 0 >= y).
+Y211 x =u x (\y. 0 >= y).
+Y212 x =u x (\y. 0 >= y).
+Z0 x =u Z10 x \/ Z20 x.
+Z1 x =u Z11 x \/ Z21 x.
+Z2 x =u Z12 x \/ Z22 x.
+Z10 x =u ∃y. Z1 (K y).
+Z12 x =u Z1 (Pred x).
+Z11 x =u (x (\y. 0 >= y) /\ Z0 x) \/ (x (\y. y >= 1) /\ Z2 x).
+Z20 x =u Z210 x /\ X0 x.
+Z21 x =u Z211 x /\ X1 x.
+Z22 x =u Z212 x /\ X2 x.
+Z210 x =u x (\y. y >= 1).
+Z211 x =u x (\y. y >= 1).
+Z212 x =u x (\y. y >= 1).

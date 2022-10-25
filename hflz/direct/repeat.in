@@ -1,0 +1,6 @@
+%HES
+Sentry =u ∀n. Input 0 (G n).
+Input x k =u (k x) \/ (Input (x+1) k).
+G z x =u Repeat (Sub x) z.
+Sub x y k =u k(y-x).
+Repeat f x =u x <= 0 \/ (x > 0 /\ f x (Repeat f) /\ Repeat f (x-1)).
